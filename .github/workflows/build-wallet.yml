@@ -64,7 +64,7 @@ jobs:
           if-no-files-found: error
 
   desktop-mac:
-    runs-on: macos-14
+    runs-on: macos-15   # arm64; the macOS 14 images were retired from GitHub Actions on 2026-11-02
     env:
       TAG: ${{ inputs.tag || github.ref_name }}
     steps:
