@@ -228,11 +228,19 @@ jobs:
         with:
           path: dist
           merge-multiple: true
+      - name: One flat directory, file names without spaces (release assets carry the base name, and GitHub replaces a space by a dot)
+        working-directory: dist
+        run: |
+          set -euo pipefail
+          find . -mindepth 2 -type f -exec mv -t . {} +
+          find . -mindepth 1 -type d -empty -delete
+          for f in *\ *; do [ -e "$f" ] && mv "$f" "${f// /-}"; done
+          ls -l
       - name: SHA256SUMS, unsigned (the owner signs locally)
         working-directory: dist
         run: |
           set -euo pipefail
-          find . -type f ! -name SHA256SUMS -printf '%P\n' | LC_ALL=C sort | xargs -d '\n' sha256sum > SHA256SUMS
+          find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%P\n' | LC_ALL=C sort | xargs -d '\n' sha256sum > SHA256SUMS
           cat SHA256SUMS
       - name: Draft release with the artefacts and the hashes
         env:
@@ -253,6 +261,6 @@ jobs:
           - the signed tag ${TAG} and the build manifest of the WASM
           - this public build run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
           EOF
+          files=(dist/*)
           gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag \
-            --title "Zephyr wallet $TAG" --notes-file notes.md \
-            $(find dist -type f | LC_ALL=C sort)
+            --title "Zephyr wallet $TAG" --notes-file notes.md "${files[@]}"
