@@ -28,7 +28,7 @@
   "dependencies": {
     "axios": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
-    "zephyr-javascript": "github:ZephyrProtocol/zephyr-javascript",
+    "zephyr-javascript": "github:zephyr-backports/zephyr-javascript#v2.3.0-sec.1",
     "rxjs": "^7.5.7"
   },
   "devDependencies": {
